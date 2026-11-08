@@ -1,10 +1,4 @@
-"""Core matching engine: NLP layer, scoring layer and feedback-learning layer.
-
-No Streamlit imports here, so the same code is used by the web app (app.py),
-the command line demo and the performance analysis (analysis.py).
-"""
 import re
-
 import numpy as np
 import pandas as pd
 import nltk

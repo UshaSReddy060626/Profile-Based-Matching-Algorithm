@@ -1,16 +1,8 @@
-"""Data pipeline: validates and cleans users.csv / feedback.csv and writes the MBTI rule matrix.
-
-Run:  python data_pipeline.py
-"""
 import pandas as pd
-
 from matching import MBTI_TYPES, CITIES, mbti_rule
-
 USERS_REQUIRED = ["user_id", "name", "age", "gender", "city", "latitude", "longitude", "education", "job_title",
                   "industry", "years_experience", "skills", "mbti", "work_mode", "looking_for", "career_goal",
                   "interests", "values", "professional_summary", "about_me", "join_date"]
-
-
 def clean_users(path="users.csv"):
     df = pd.read_csv(path)
     missing = [c for c in USERS_REQUIRED if c not in df.columns]

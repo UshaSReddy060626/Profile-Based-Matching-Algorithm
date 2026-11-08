@@ -1,7 +1,5 @@
 """Generates the synthetic dataset: users.csv, feedback.csv and simulated_user_preferences.csv.
 
-Run:  python generate_data.py     (seeded, so it reproduces the same files every time)
-
 The simulated users have hidden preferences (archetypes such as career-focused or personality-focused). These
 hidden weights are used only to simulate Accept/Reject behaviour and to evaluate the model; the model never sees them.
 """

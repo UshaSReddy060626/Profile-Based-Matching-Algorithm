@@ -1,16 +1,3 @@
-"""Performance analysis of the feedback loop (sections 6.1-6.3 of the original notebook).
-
-  6.1  Chronological hold-out: first 60% of each user's feedback trains their weights, last 40% is held out.
-       Metric: mean per-user ROC-AUC (each user ranks candidates for themselves).
-  6.2  Expected top-5 acceptance on unseen candidates, using the simulated users' hidden acceptance probabilities.
-  6.3  Online cold-start simulation: 8 rounds, each round the user sees the top 5 of a fresh pool of 25 candidates
-       and accepts/rejects; adaptive weights are re-fitted after every round, static weights never change.
-
-The hidden preferences come from generate_data.py (simulated users). The model never sees them; they are only used
-to simulate behaviour and as an "oracle" upper bound.
-
-Run:  python analysis.py      (writes charts and performance_report.md into results/)
-"""
 import json
 import os
 
@@ -43,7 +30,7 @@ def train_data(fb, u):
     return np.array([FEAT[idx[u], idx[m]] for m in d.matched_user_id]), d.action.values
 
 
-# ---------------------------------------------------------------- 6.1 hold-out AUC
+# hold-out AUC
 fb_sorted = feedback.sort_values(["user_id", "timestamp"])
 tr, te = [], []
 for u, g in fb_sorted.groupby("user_id"):
@@ -66,7 +53,7 @@ auc_default, n_eval = mean_auc(lambda u: DEFAULT_W)
 auc_learned, _ = mean_auc(lambda u: learned_tr[u])
 auc_oracle, _ = mean_auc(lambda u: TRUE_W[idx[u]])
 
-# ---------------------------------------------------------------- 6.2 expected top-5 acceptance
+# expected top-5 acceptance
 USER_WEIGHTS = {u: learn_weights(*train_data(feedback, u)) for u in users.user_id}
 
 
@@ -85,7 +72,7 @@ acc_default = top5_expected(lambda u: DEFAULT_W)
 acc_learned = top5_expected(lambda u: USER_WEIGHTS[u])
 acc_oracle = top5_expected(lambda u: TRUE_W[idx[u]])
 
-# ---------------------------------------------------------------- 6.3 online simulation
+# online simulation
 POOL, ROUNDS = 25, 8
 
 
@@ -111,7 +98,7 @@ def simulate(adaptive, seed, k=5):
 adaptive = np.mean([simulate(True, s) for s in range(5)], axis=0)
 static = np.mean([simulate(False, s) for s in range(5)], axis=0)
 
-# ---------------------------------------------------------------- charts
+# charts
 fig, ax = plt.subplots(figsize=(7.5, 4))
 r = np.arange(1, ROUNDS + 1)
 ax.plot(r, 100 * static, "o--", color=ROSY, label="Static default weights")
@@ -141,7 +128,7 @@ ax.set_title("Learned weights per user type (dotted = default weights)"); ax.set
 plt.tight_layout(); plt.savefig("results/learned_weights.png", dpi=150); plt.close()
 
 
-# ---------------------------------------------------------------- data for the dashboard's report tab
+# data for the dashboard's report tab
 pd.DataFrame({"round": r, "static": 100 * static, "adaptive": 100 * adaptive}).to_csv("results/acceptance_curve.csv", index=False)
 summary_w.rename(columns={"Text": "Text", "MBTI": "MBTI", "Location": "Location"}).to_csv("results/weights_by_archetype.csv")
 # How predictive is each signal on its own? Mean per-user AUC of the raw signal against Accept/Reject (no training involved).
@@ -156,7 +143,7 @@ for k, name in enumerate(["Text similarity", "MBTI pairing", "Location"]):
     feat_auc[name] = float(np.mean(a))
 pd.DataFrame({"signal": list(feat_auc), "auc": list(feat_auc.values())}).to_csv("results/feature_auc.csv", index=False)
 
-# ---------------------------------------------------------------- report
+# report
 metrics = dict(auc_default=auc_default, auc_learned=auc_learned, auc_oracle=auc_oracle, users_evaluated=n_eval,
                random=rand_rate, top5_default=acc_default, top5_learned=acc_learned, top5_oracle=acc_oracle,
                sim_round1=float(adaptive[0]), sim_round8_adaptive=float(adaptive[-1]),
