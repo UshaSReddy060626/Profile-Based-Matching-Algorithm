@@ -26,7 +26,7 @@ DEFAULT_W = np.array([0.5, 0.3, 0.2])   # w1 text, w2 MBTI, w3 location
 FEATURE_NAMES = ["Text", "MBTI", "Location"]
 
 
-# ---------------------------------------------------------------- scoring layer
+# scoring layer
 def mbti_rule(a, b):
     """MBTI compatibility on a 0-100 scale (ideal pairs = 100, otherwise a rule-based score)."""
     if frozenset((a, b)) in IDEAL:
@@ -42,7 +42,7 @@ def haversine(lat1, lon1, lat2, lon2):
     return 6371 * 2 * np.arcsin(np.sqrt(a))
 
 
-# ---------------------------------------------------------------- learning layer
+# learning layer
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
@@ -63,7 +63,7 @@ def learn_weights(X, y, prior=DEFAULT_W, lr=1.0, epochs=400, lam=0.02, scale=4.0
     return t / t.sum() if t.sum() > 1e-9 else prior.copy()
 
 
-# ---------------------------------------------------------------- NLP layer + engine
+# NLP layer + engine
 class MatchEngine:
     def __init__(self, users_csv="users.csv", feedback_csv="feedback.csv"):  # feedback_csv=None -> no training
         for pkg in ["stopwords", "wordnet", "omw-1.4"]:
