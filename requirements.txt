@@ -1,0 +1,9 @@
+streamlit>=1.40
+pandas
+numpy
+scikit-learn
+nltk
+matplotlib
+seaborn
+altair
+fpdf2

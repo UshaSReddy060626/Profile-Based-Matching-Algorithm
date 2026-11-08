@@ -1,0 +1,27 @@
+[theme]
+base = "light"
+primaryColor = "#105666"
+backgroundColor = "#F7F4D5"
+secondaryBackgroundColor = "#EDEACB"
+textColor = "#0A3323"
+font = "Inter"
+headingFont = "Playfair Display"
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter.ttf"
+weight = "100 900"
+
+[[theme.fontFaces]]
+family = "Playfair Display"
+url = "app/static/fonts/PlayfairDisplay.ttf"
+weight = "400 900"
+
+[server]
+enableStaticServing = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
